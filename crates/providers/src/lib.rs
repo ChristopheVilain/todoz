@@ -4,6 +4,7 @@ use todoz_core::Effort;
 
 pub mod anthropic;
 pub mod mistral;
+pub mod mock;
 pub mod openai;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

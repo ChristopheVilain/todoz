@@ -1,7 +1,7 @@
 :root {
   font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
-  font-size: 16px;
-  line-height: 24px;
+  font-size: 14px;
+  line-height: 1.4;
   font-weight: 400;
 
   color: #0f0f0f;
@@ -22,42 +22,167 @@ body {
   margin: 0;
 }
 
+h1, h2, h3 {
+  margin: 0 0 0.5rem;
+}
+
+h2 {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  opacity: 0.6;
+}
+
+button {
+  cursor: pointer;
+  border-radius: 6px;
+  border: 1px solid rgba(15, 15, 15, 0.15);
+  padding: 0.4em 0.8em;
+  font-size: 0.85em;
+  font-family: inherit;
+  color: inherit;
+  background-color: #ffffff;
+}
+
+button:hover {
+  border-color: #396cd8;
+}
+
+button.active {
+  background-color: #396cd8;
+  color: #ffffff;
+  border-color: #396cd8;
+}
+
+input {
+  border-radius: 6px;
+  border: 1px solid rgba(15, 15, 15, 0.15);
+  padding: 0.4em 0.6em;
+  font-family: inherit;
+  font-size: 0.85em;
+  color: inherit;
+  background-color: #ffffff;
+}
+
+.placeholder-note {
+  opacity: 0.55;
+  font-size: 0.85em;
+}
+
+kbd {
+  padding: 0.1em 0.4em;
+  border-radius: 4px;
+  border: 1px solid rgba(15, 15, 15, 0.25);
+  font-family: inherit;
+  font-size: 0.85em;
+}
+
+.tag-chip {
+  display: inline-block;
+  padding: 0.1em 0.5em;
+  margin: 0 0.25em 0.25em 0;
+  border-radius: 999px;
+  background-color: rgba(57, 108, 216, 0.15);
+  font-size: 0.75em;
+}
+
+/* --- App grid --- */
+
 .app {
+  display: grid;
+  grid-template-columns: 220px 1fr 280px;
+  height: 100vh;
+}
+
+.sidebar {
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  padding: 1rem 1.5rem 1.5rem;
+  padding: 0.75rem;
+  gap: 0.75rem;
+  overflow-y: auto;
 }
 
-.toolbar {
+.sidebar-left {
+  border-right: 1px solid rgba(15, 15, 15, 0.1);
+}
+
+.sidebar-right {
+  border-left: 1px solid rgba(15, 15, 15, 0.1);
+  /* Left inset moves onto individual children instead of the container, so
+     a selected card-list row can span flush to this shared boundary with
+     .card-detail without relying on negative-margin overflow (which
+     `overflow-y: auto` above silently clips on the x-axis too). */
+  padding-left: 0;
+}
+
+.sidebar-right > .todo-list-header {
+  padding-left: 0.75rem;
+}
+
+.logo-settings {
+  text-align: left;
+  font-weight: 600;
+  font-size: 1rem;
+  background: none;
+  border: none;
+  padding: 0.3em 0;
+}
+
+.panel {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1rem;
+  flex-direction: column;
 }
 
-.toolbar h1 {
-  font-size: 1.25rem;
+.tags-list, .card-list {
+  list-style: none;
   margin: 0;
-}
-
-.toolbar-actions {
+  padding: 0;
   display: flex;
-  align-items: center;
-  gap: 1rem;
+  flex-direction: column;
+  gap: 0.2rem;
+  overflow-y: auto;
 }
 
-.idle-setting {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  font-size: 0.85rem;
-  opacity: 0.8;
+.history-panel {
+  flex: 1;
 }
 
-.idle-setting input {
-  width: 4rem;
+.tag-item {
   padding: 0.3em 0.5em;
+  border-radius: 6px;
+  font-size: 0.85em;
+  cursor: pointer;
+}
+
+.tag-item:hover {
+  background-color: rgba(57, 108, 216, 0.1);
+}
+
+.tag-item.selected {
+  background-color: #396cd8;
+  color: #ffffff;
+}
+
+/* --- Center: card detail --- */
+
+.card-detail {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  overflow-y: auto;
+  gap: 0.75rem;
+  border-right: 4px solid transparent;
+}
+
+/* Ties the detail panel visually to whichever card is highlighted in the
+   right-hand Todo List, so it's clear what's currently open. */
+.card-detail.has-selection {
+  border-right-color: #396cd8;
+}
+
+.card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
 }
 
 .empty-state {
@@ -65,19 +190,268 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(15, 15, 15, 0.55);
+  text-align: center;
+  opacity: 0.6;
+}
+
+.view-panel-controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.raw-note-viewport {
+  border: 1px solid rgba(15, 15, 15, 0.12);
+  border-radius: 8px;
+  padding: 0.6rem 0.9rem;
+}
+
+.raw-note-viewport-text {
+  margin: 0;
+  white-space: pre-wrap;
+  font-family: inherit;
+  font-size: 0.85rem;
+  opacity: 0.85;
+}
+
+.action-item-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.action-item-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid rgba(15, 15, 15, 0.12);
+  border-radius: 8px;
+}
+
+.action-item-row.state-done {
+  opacity: 0.55;
+}
+
+.action-item-row.state-dismissed {
+  opacity: 0.4;
+  text-decoration: line-through;
+}
+
+.action-item-title {
+  font-weight: 500;
+  flex: 1 1 auto;
+}
+
+.action-item-state {
+  font-size: 0.75em;
+  padding: 0.1em 0.5em;
+  border-radius: 999px;
+  background-color: rgba(15, 15, 15, 0.08);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.action-item-controls {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.action-item-controls button {
+  padding: 0.25em 0.5em;
+  font-size: 0.75em;
+}
+
+.delete-item-button {
+  border-color: rgba(192, 57, 43, 0.4);
+}
+
+.action-item-add-tag {
+  display: inline-flex;
+  gap: 0.25em;
+}
+
+.add-tag-input {
+  font-size: 0.75em;
+  padding: 0.2em 0.4em;
+  width: 6.5em;
+}
+
+.add-tag-button {
+  padding: 0.2em 0.5em;
+  font-size: 0.75em;
+  line-height: 1;
+}
+
+.error-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background-color: #c0392b;
+  color: #ffffff;
+  padding: 0.5em 1em;
+  font-size: 0.85em;
   text-align: center;
 }
 
-.capture-panel {
+.raw-note-textarea {
   flex: 1;
+  resize: none;
+  padding: 1rem;
+  font-family: inherit;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  border: 1px solid rgba(15, 15, 15, 0.15);
+  background-color: #ffffff;
+  color: inherit;
+}
+
+/* --- Right: todo list --- */
+
+.todo-list-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.filter-presets {
+  display: flex;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+}
+
+.filter-presets button {
+  flex: 1;
+  font-size: 0.75em;
+  padding: 0.35em 0.4em;
+}
+
+.active-filter-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.8em;
+  background-color: rgba(57, 108, 216, 0.12);
+  border-radius: 6px;
+  padding: 0.3em 0.6em;
+}
+
+.active-filter-indicator button {
+  border: none;
+  background: none;
+  font-size: 1em;
+  padding: 0 0.3em;
+}
+
+.new-note-button {
+  width: 100%;
+}
+
+.card-list-item {
+  /* .sidebar-right carries no left padding (see above), so this box
+     already spans edge-to-edge with .card-detail; left padding here just
+     insets the *content*, leaving the box itself free to go full-bleed —
+     needed so a selected row's background can reach that shared edge. */
+  padding: 0.5rem 0.6rem 0.5rem 1.35rem;
+  border-radius: 0 8px 8px 0;
+  cursor: pointer;
+  border: 1px solid transparent;
+  border-left: none;
+}
+
+.card-list-item:hover {
+  background-color: rgba(57, 108, 216, 0.08);
+}
+
+.card-list-item.selected {
+  background-color: #396cd8;
+  color: #ffffff;
+  /* Flush against the sidebar's left edge — the shared boundary with
+     .card-detail — so its highlight visually meets that panel's accent
+     border, linking the open card to its row in the list. */
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.card-list-item.needs-triage {
+  border-color: #d89639;
+}
+
+.card-snippet {
+  display: block;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-meta {
+  display: block;
+  font-size: 0.75em;
+  opacity: 0.7;
+}
+
+/* --- Overlays (settings + capture) --- */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+/* `.overlay { display: flex }` otherwise overrides the browser's built-in
+   `[hidden] { display: none }` rule, since both are author-origin rules of
+   equal specificity decided by source order — this explicit, higher-
+   specificity override makes the `hidden` attribute actually take effect. */
+.overlay[hidden] {
+  display: none;
+}
+
+.modal {
+  background-color: #f6f6f6;
+  border-radius: 12px;
+  padding: 1.5rem;
+  width: 360px;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+}
+
+.settings-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.85em;
+}
+
+/* Capture overlay leaves the right-hand card list visible, so it's
+   positioned/sized to cover only the left sidebar + center pane. */
+#capture-overlay {
+  justify-content: flex-start;
+  padding-left: 0;
+}
+
+.capture-panel {
+  margin: 2rem;
+  width: calc(100% - 280px - 4rem);
+  height: calc(100% - 4rem);
+  background-color: #f6f6f6;
+  border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+  display: grid;
+  grid-template-columns: 1fr 260px;
+  gap: 1rem;
+  padding: 1rem;
 }
 
 #capture-textarea {
-  flex: 1;
   resize: none;
   padding: 1rem;
   font-size: 1rem;
@@ -93,55 +467,35 @@ body {
   border-color: #396cd8;
 }
 
-.capture-footer {
+.capture-side {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
-.status {
-  font-size: 0.85rem;
-  opacity: 0.75;
-}
-
-kbd {
-  padding: 0.1em 0.4em;
-  border-radius: 4px;
-  border: 1px solid rgba(15, 15, 15, 0.25);
-  font-family: inherit;
-  font-size: 0.85em;
-}
-
-input,
-button {
+.llm-log-panel, .suggested-tags-panel {
+  border: 1px solid rgba(15, 15, 15, 0.12);
   border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.5em 1em;
-  font-size: 0.9em;
-  font-weight: 500;
-  font-family: inherit;
-  color: #0f0f0f;
-  background-color: #ffffff;
-  transition: border-color 0.25s;
-  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+  padding: 0.6rem;
+  min-height: 3rem;
 }
 
-button {
-  cursor: pointer;
+.llm-log-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 0.8em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
 }
 
-button:hover {
-  border-color: #396cd8;
+.log-error {
+  color: #c0392b;
 }
 
-button:active {
-  border-color: #396cd8;
-  background-color: #e8e8e8;
-}
-
-input,
-button {
-  outline: none;
+#capture-done-button {
+  margin-top: auto;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -150,11 +504,16 @@ button {
     background-color: #2f2f2f;
   }
 
-  .empty-state {
-    color: rgba(246, 246, 246, 0.55);
+  .sidebar-left {
+    border-right-color: rgba(246, 246, 246, 0.15);
   }
 
-  #capture-textarea {
+  .sidebar-right {
+    border-left-color: rgba(246, 246, 246, 0.15);
+  }
+
+  button, input {
+    color: #ffffff;
     background-color: #1c1c1c;
     border-color: rgba(246, 246, 246, 0.2);
   }
@@ -163,13 +522,24 @@ button {
     border-color: rgba(246, 246, 246, 0.3);
   }
 
-  input,
-  button {
-    color: #ffffff;
-    background-color: #0f0f0f98;
+  .action-item-row, .raw-note-viewport {
+    border-color: rgba(246, 246, 246, 0.15);
   }
 
-  button:active {
-    background-color: #0f0f0f69;
+  .action-item-state {
+    background-color: rgba(246, 246, 246, 0.12);
+  }
+
+  #capture-textarea, .raw-note-textarea {
+    background-color: #1c1c1c;
+    border-color: rgba(246, 246, 246, 0.2);
+  }
+
+  .modal, .capture-panel {
+    background-color: #2f2f2f;
+  }
+
+  .llm-log-panel, .suggested-tags-panel {
+    border-color: rgba(246, 246, 246, 0.15);
   }
 }

@@ -9,33 +9,81 @@
   </head>
 
   <body>
-    <main class="app">
-      <header class="toolbar">
-        <h1>todoz</h1>
-        <div class="toolbar-actions">
-          <label class="idle-setting" title="Seconds of inactivity before an open note auto-classifies">
-            Idle timeout
-            <input id="idle-timeout-input" type="number" min="5" step="5" />
-            s
-          </label>
-          <button id="new-note-button" type="button">+ New Note (⌘N)</button>
+    <div id="error-banner" class="error-banner" hidden></div>
+    <div class="app">
+      <aside class="sidebar sidebar-left">
+        <button id="logo-settings-button" class="logo-settings">todoz ⚙</button>
+
+        <section class="panel tags-panel">
+          <h2>Tags</h2>
+          <p class="placeholder-note">Click to filter · ⌘/Ctrl-click to combine</p>
+          <ul id="tags-list" class="tags-list"></ul>
+        </section>
+
+        <section class="panel history-panel">
+          <h2>History</h2>
+          <p class="placeholder-note">Coming soon</p>
+        </section>
+      </aside>
+
+      <main id="card-detail" class="card-detail">
+        <div class="empty-state">
+          <p>Select a card, or press <kbd>⌘N</kbd> / <kbd>Ctrl+N</kbd> to capture something new.</p>
         </div>
-      </header>
+      </main>
 
-      <section id="empty-state" class="empty-state">
-        <p>No note open. Press <kbd>⌘N</kbd> / <kbd>Ctrl+N</kbd> or click "+ New Note" to capture something.</p>
-      </section>
+      <aside class="sidebar sidebar-right">
+        <div class="todo-list-header">
+          <div id="filter-presets" class="filter-presets">
+            <button data-preset="triage">Needs Triage</button>
+            <button data-preset="open">Open</button>
+            <button data-preset="all">All</button>
+          </div>
+          <div id="active-filter-indicator" class="active-filter-indicator" hidden>
+            <span id="active-filter-label"></span>
+            <button id="clear-filter-button" title="Clear filter">×</button>
+          </div>
+          <button id="new-note-button" class="new-note-button">+ New Note (⌘N)</button>
+        </div>
+        <ul id="card-list" class="card-list"></ul>
+      </aside>
 
-      <section id="capture-panel" class="capture-panel" hidden>
-        <textarea
-          id="capture-textarea"
-          placeholder="Type anything. It's saved as you go — close this panel (Esc) when you're done."
-        ></textarea>
-        <footer class="capture-footer">
-          <span id="capture-status" class="status">Draft</span>
-          <button id="done-button" type="button">Done (Esc)</button>
-        </footer>
-      </section>
-    </main>
+      <div id="settings-overlay" class="overlay" hidden>
+        <div class="modal">
+          <h2>Settings</h2>
+          <label class="settings-field">
+            Idle timeout before auto-classify (seconds)
+            <input id="idle-timeout-input" type="number" min="5" step="5" />
+          </label>
+          <p class="placeholder-note">
+            Custom tag review threshold, AI provider/model, and API key management aren't
+            wired up yet.
+          </p>
+          <button id="settings-close-button">Close</button>
+        </div>
+      </div>
+
+      <div id="capture-overlay" class="overlay" hidden>
+        <div class="capture-panel">
+          <textarea
+            id="capture-textarea"
+            placeholder="Type anything. It's saved as you go — close this panel (Esc) when you're done."
+          ></textarea>
+          <div class="capture-side">
+            <section class="llm-log-panel">
+              <h3>LLM Log</h3>
+              <ul id="llm-log-list" class="llm-log-list"></ul>
+            </section>
+            <section class="suggested-tags-panel">
+              <h3>Suggested Tags</h3>
+              <div id="suggested-tags-list" class="suggested-tags-list"></div>
+            </section>
+            <button id="capture-done-button">Done (Esc)</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <datalist id="tag-options"></datalist>
   </body>
 </html>
