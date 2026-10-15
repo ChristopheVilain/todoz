@@ -85,6 +85,49 @@ impl Store {
                 other => Err(other.into()),
             })
     }
+
+    pub fn update_note(
+        &self,
+        id: Uuid,
+        raw_text: &str,
+        status: NoteStatus,
+        updated_at: DateTime<Utc>,
+    ) -> Result<(), StorageError> {
+        self.conn.execute(
+            "UPDATE notes SET raw_text = ?1, status = ?2, updated_at = ?3
+             WHERE id = ?4 AND deleted_at IS NULL",
+            rusqlite::params![
+                raw_text,
+                status_to_str(status),
+                updated_at.to_rfc3339(),
+                id.to_string(),
+            ],
+        )?;
+        Ok(())
+    }
+
+    pub fn get_setting(&self, key: &str) -> Result<Option<String>, StorageError> {
+        self.conn
+            .query_row(
+                "SELECT value FROM settings WHERE key = ?1",
+                [key],
+                |row| row.get(0),
+            )
+            .map(Some)
+            .or_else(|err| match err {
+                rusqlite::Error::QueryReturnedNoRows => Ok(None),
+                other => Err(other.into()),
+            })
+    }
+
+    pub fn set_setting(&self, key: &str, value: &str) -> Result<(), StorageError> {
+        self.conn.execute(
+            "INSERT INTO settings (key, value) VALUES (?1, ?2)
+             ON CONFLICT(key) DO UPDATE SET value = excluded.value",
+            rusqlite::params![key, value],
+        )?;
+        Ok(())
+    }
 }
 
 fn status_to_str(status: NoteStatus) -> &'static str {
@@ -188,5 +231,44 @@ mod tests {
         assert_eq!(fetched.raw_text, note.raw_text);
 
         std::fs::remove_file(&path).ok();
+    }
+
+    #[test]
+    fn update_note_persists_text_and_status() {
+        let store = Store::open_in_memory().unwrap();
+        let note = Note {
+            id: Uuid::new_v4(),
+            raw_text: "first draft".to_string(),
+            status: NoteStatus::Editing,
+            created_at: Utc::now(),
+            updated_at: Utc::now(),
+        };
+        store.insert_note(&note).unwrap();
+
+        store
+            .update_note(note.id, "revised text", NoteStatus::Classified, Utc::now())
+            .unwrap();
+
+        let fetched = store.get_note(note.id).unwrap().unwrap();
+        assert_eq!(fetched.raw_text, "revised text");
+        assert_eq!(fetched.status, NoteStatus::Classified);
+    }
+
+    #[test]
+    fn settings_default_to_none_then_roundtrip_after_set() {
+        let store = Store::open_in_memory().unwrap();
+        assert!(store.get_setting("idle_timeout_s").unwrap().is_none());
+
+        store.set_setting("idle_timeout_s", "60").unwrap();
+        assert_eq!(
+            store.get_setting("idle_timeout_s").unwrap().as_deref(),
+            Some("60")
+        );
+
+        store.set_setting("idle_timeout_s", "90").unwrap();
+        assert_eq!(
+            store.get_setting("idle_timeout_s").unwrap().as_deref(),
+            Some("90")
+        );
     }
 }
