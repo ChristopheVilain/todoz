@@ -157,4 +157,36 @@ mod tests {
         assert_eq!(fetched.raw_text, note.raw_text);
         assert_eq!(fetched.status, note.status);
     }
+
+    #[test]
+    fn get_note_returns_none_for_unknown_id() {
+        let store = Store::open_in_memory().unwrap();
+        assert!(store.get_note(Uuid::new_v4()).unwrap().is_none());
+    }
+
+    #[test]
+    fn reopening_the_same_database_does_not_reapply_migrations() {
+        let path = std::env::temp_dir().join(format!("todoz-test-{}.sqlite3", Uuid::new_v4()));
+
+        let note = Note {
+            id: Uuid::new_v4(),
+            raw_text: "persisted across reopen".to_string(),
+            status: NoteStatus::Idle,
+            created_at: Utc::now(),
+            updated_at: Utc::now(),
+        };
+
+        {
+            let store = Store::open(&path).unwrap();
+            store.insert_note(&note).unwrap();
+        }
+
+        // Reopening must re-run migrate() without error (idempotent) and must
+        // not have wiped prior data.
+        let store = Store::open(&path).unwrap();
+        let fetched = store.get_note(note.id).unwrap().unwrap();
+        assert_eq!(fetched.raw_text, note.raw_text);
+
+        std::fs::remove_file(&path).ok();
+    }
 }
