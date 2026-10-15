@@ -1,0 +1,12 @@
+[package]
+name = "todoz-storage"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+serde.workspace = true
+uuid.workspace = true
+chrono.workspace = true
+thiserror.workspace = true
+rusqlite = { version = "0.32", features = ["bundled"] }
+todoz-core = { path = "../core" }
